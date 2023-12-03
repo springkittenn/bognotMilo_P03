@@ -492,11 +492,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d83149c9e04427c42b7eca0b5788ae9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRange: 8
   playerInRange: 0
-  alert: {fileID: 1427270232}
-  lookAroundInterval: 4
   turningSpeed: 300
+  detectionRange: 8
+  lookAroundInterval: 4
+  fieldOfViewAngle: 90
+  alert: {fileID: 1427270232}
 --- !u!82 &1427270232
 AudioSource:
   m_ObjectHideFlags: 0
@@ -507,9 +508,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: e4e753513fafe8e44aa5bd043ab872f1, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.144
   m_Pitch: 1
   Loop: 0
   Mute: 0
