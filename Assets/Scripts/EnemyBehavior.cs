@@ -21,6 +21,7 @@ public class EnemyBehavior : MonoBehaviour
     // ALERT VAR
     public float fieldOfViewAngle = 90f;
     public AudioSource alert;
+    private bool playerJustEnteredSight = false;
 
     //-------------------------------------------------------------------------------------------
 
@@ -45,15 +46,17 @@ public class EnemyBehavior : MonoBehaviour
         // Check if the player is within the detection range
         if (distanceToPlayer <= detectionRange && angleToPlayer <= fieldOfViewAngle * 0.5f)
         {
-            if (!playerInRange)
+            // Check line of sight
+            if (HasLineOfSightToPlayer(directionToPlayer))
             {
-                alert.Play();
-            }
-            playerInRange = true;
+                if (!playerInRange)
+                {
+                    // Player has just entered the line of sight
+                    playerJustEnteredSight = true;
+                }
 
-            if (playerInRange)
-            {
-                // Ignore the Y-axis rotation
+                playerInRange = true;
+
                 directionToPlayer.y = 0;
 
                 // Create a rotation that looks at the player
@@ -61,11 +64,24 @@ public class EnemyBehavior : MonoBehaviour
 
                 // Reset look around state
                 isLookingAround = false;
+
+                if (playerJustEnteredSight)
+                {
+                    alert.Play();
+                    playerJustEnteredSight = false; // Reset the flag
+                }
+
+                else
+                {
+                    isLookingAround = true;
+                }
             }
         }
         else
         {
             playerInRange = false;
+
+            isLookingAround = true;
 
             // While the player is not in range, make the enemy look around gradually
             timeSinceLastLook += Time.deltaTime;
@@ -97,5 +113,29 @@ public class EnemyBehavior : MonoBehaviour
         float randomYRotation = Random.Range(0f, 360f);
         targetRotation = initialRotation * Quaternion.Euler(0, randomYRotation, 0);
         isLookingAround = true;
+    }
+
+    bool HasLineOfSightToPlayer(Vector3 directionToPlayer)
+    {
+        // Cast a ray from the enemy towards the player
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRange))
+        {
+            // Draw a green line in the Scene view to visualize the raycast
+            Debug.DrawRay(transform.position, directionToPlayer.normalized * detectionRange, Color.green);
+
+            // Check if the hit object is the player
+            if (hit.collider.CompareTag("Player"))
+            {
+                return true; // Player is in line of sight
+            }
+        }
+        else
+        {
+            // Draw a red line in the Scene view to visualize the raycast (extend to the detection range)
+            Debug.DrawRay(transform.position, directionToPlayer.normalized * detectionRange, Color.red);
+        }
+
+        return false; // No line of sight
     }
 }
