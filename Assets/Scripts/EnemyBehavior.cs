@@ -8,8 +8,8 @@ public class EnemyBehavior : MonoBehaviour
     public bool playerInRange = false;
     private Transform player;
 
-    // MOVEMENT VAR
-    public float turningSpeed = 300f; // Adjust the turning speed for faster rotations
+    // IDLE VAR
+    public float turningSpeed = 300f;
     public float detectionRange = 8f;
     public float lookAroundInterval = 4f;
     private float timeSinceLastLook = 0f;
@@ -20,6 +20,7 @@ public class EnemyBehavior : MonoBehaviour
 
     // ALERT VAR
     public float fieldOfViewAngle = 90f;
+    public float chaseSpeed = 2f;
     public AudioSource alert;
     private bool playerJustEnteredSight = false;
 
@@ -64,6 +65,14 @@ public class EnemyBehavior : MonoBehaviour
 
                 // Reset look around state
                 isLookingAround = false;
+
+                // Move the enemy towards the player
+                transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
+
+                // Update rotation to look at the player
+                targetRotation = Quaternion.LookRotation(player.position - transform.position);
+                float step = turningSpeed * Time.deltaTime;
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, step);
 
                 if (playerJustEnteredSight)
                 {
@@ -119,23 +128,21 @@ public class EnemyBehavior : MonoBehaviour
     {
         // Cast a ray from the enemy towards the player
         RaycastHit hit;
+
+        // Draw a red line in the Scene view to visualize the raycast (extend to the detection range)
+        Debug.DrawRay(transform.position, directionToPlayer.normalized * detectionRange, Color.red);
+
         if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRange))
         {
-            // Draw a green line in the Scene view to visualize the raycast
-            Debug.DrawRay(transform.position, directionToPlayer.normalized * detectionRange, Color.green);
-
             // Check if the hit object is the player
             if (hit.collider.CompareTag("Player"))
             {
+                // Draw a green line in the Scene view to visualize the raycast
+                Debug.DrawRay(transform.position, directionToPlayer.normalized * detectionRange, Color.green);
+
                 return true; // Player is in line of sight
             }
         }
-        else
-        {
-            // Draw a red line in the Scene view to visualize the raycast (extend to the detection range)
-            Debug.DrawRay(transform.position, directionToPlayer.normalized * detectionRange, Color.red);
-        }
-
         return false; // No line of sight
     }
 }

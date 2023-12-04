@@ -497,6 +497,7 @@ MonoBehaviour:
   detectionRange: 8
   lookAroundInterval: 2
   fieldOfViewAngle: 90
+  chaseSpeed: 2
   alert: {fileID: 1427270232}
 --- !u!82 &1427270232
 AudioSource:
@@ -724,7 +725,7 @@ GameObject:
   - component: {fileID: 1880425300}
   m_Layer: 3
   m_Name: wallTest
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
